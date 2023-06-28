@@ -1,0 +1,9 @@
+channels and its types
+sprintf
+defer, panic, recover differences
+exception handling
+iota constants
+variadic functions
+interfaces and its uses
+goroutines
+waitgroups

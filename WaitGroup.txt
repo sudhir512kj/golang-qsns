@@ -1,0 +1,40 @@
+WaitGroup
+
+Golang Waitgroup allows you to block a specific code block to allow a set of goroutines to complete execution. An example would be to block the main function until the goroutines are completed and then unblocks the group.
+
+Waitgroup is available as a standard package and can be imported from the sync package.
+
+Methods of Waitgroups in Golang
+Add - The Waitgroup acts as a counter holding the number of functions or go routines to wait for. When the counter becomes 0 the Waitgroup releases the goroutines. 
+Wait - The wait method blocks the execution of the application until the Waitgroup counter becomes 0.
+Done - Decreases the Waitgroup counter by a value of 1
+
+<code>
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	fmt.Println("Start")
+	go count("runner 1", &wg)
+	go count("runner 2", &wg)
+
+	wg.Wait()
+	fmt.Println("Stopped")
+}
+
+func count(value string, wg *sync.WaitGroup) {
+
+	fmt.Println(value, " Started")
+	defer wg.Done()
+	for i := 0; i <= 5; i++ {
+		fmt.Println(value, i)
+	}
+}
+</code>

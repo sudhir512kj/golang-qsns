@@ -1,0 +1,73 @@
+Types of channels
+Unbuffered Channels -
+An unbuffered channel is a channel that needs a receiver as soon as a message is emitted to the channel. To declare an unbuffered channel, you just don’t declare a capacity.
+
+example -
+<code>
+package main
+
+import (
+	"sync"
+	"time"
+)
+
+func main() {
+	c := make(chan string)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+		c <- `foo`
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(time.Second * 1)
+		println(`Message: `+ <-c)
+	}()
+
+	wg.Wait()
+}
+</code>
+
+
+Buffered Channel-
+<code>
+package main
+
+import (
+	"sync"
+	"time"
+)
+
+func main() {
+	c := make(chan string, 2)
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	go func() {
+		defer wg.Done()
+
+		c <- `foo`
+		c <- `bar`
+	}()
+
+	go func() {
+		defer wg.Done()
+
+		time.Sleep(time.Second * 1)
+		println(`Message: `+ <-c)
+		println(`Message: `+ <-c)
+	}()
+
+	wg.Wait()
+}
+</code>
+
+The circular queue allows us to maintain an order in the buffer without needing to keep shifting the elements when one of them is popped out from the buffer.
+
+Once the limit of the buffer is reached, the goroutine that tries to push an element in the buffer will be moved in the sender list and switched to the waiting status as we have seen in the previous section. Then, as soon as the program will read the buffer, the element at the position recvx from the buffer will be returned and the waiting goroutine will resume and its value will be pushed into the buffer. Those priorities allow the channel to keep a First In First Out behavior.
